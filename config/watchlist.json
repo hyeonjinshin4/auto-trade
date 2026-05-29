@@ -1,0 +1,31 @@
+{
+  "_comment": "매수/매도 감점 동일 점수표(ta_scoring). 청산: min_signals(2)+종가≤20일선. volume 보조는 주요 1개+일 때만",
+  "respect_market_hours": true,
+  "confirm_trend": true,
+  "cooldown_hours": 4,
+  "min_signals": 2,
+  "max_signals_in_message": 4,
+  "symbols": [],
+  "thresholds": {
+    "rsi_period": 14,
+    "rsi_oversold": 30,
+    "rsi_overbought": 70,
+    "ma_fast": 5,
+    "ma_slow": 20,
+    "volume_mult": 2.0,
+    "macd_fast": 12,
+    "macd_slow": 26,
+    "macd_signal": 9,
+    "bb_period": 20,
+    "bb_std": 2.0,
+    "stoch_k": 14,
+    "stoch_d": 3,
+    "stoch_smooth": 3,
+    "stoch_low": 25,
+    "stoch_high": 75,
+    "hammer_lower_wick_pct": 0.55,
+    "hammer_body_pct": 0.35,
+    "shooting_upper_wick_pct": 0.55,
+    "shooting_body_pct": 0.35
+  }
+}

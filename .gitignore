@@ -1,0 +1,15 @@
+.env
+.kis_token_cache.json
+.env.*
+!.env.example
+*.pem
+*.key
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+logs/
+reports/
+.venv/
+venv/
+*.log

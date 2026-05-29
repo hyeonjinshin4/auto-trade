@@ -1,0 +1,7 @@
+python-dotenv>=1.0.0
+requests>=2.32.0
+pydantic>=2.7.0
+finance-datareader>=0.9.50
+pandas>=2.0.0
+numpy>=1.26.0
+pytest>=8.0.0
