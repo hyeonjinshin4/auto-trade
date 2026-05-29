@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from trading_rules.models import MarketRegime, MarketRegimeSnapshot, Rulebook, classify_regime
 
@@ -34,7 +34,8 @@ class BuyValidationContext:
     regime_reasons: list[str] = field(default_factory=list)
 
 
-BuyCheck = Callable[[BuyValidationContext], str | None]
+# Python 3.9: Callable 제네릭 인자는 런타임 평가 → Optional 사용 (3.10+ str|None 가능)
+BuyCheck = Callable[[BuyValidationContext], Optional[str]]
 
 
 def _parse_float(x: Any) -> float:

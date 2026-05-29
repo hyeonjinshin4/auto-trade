@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Optional
 
 import requests
 from dotenv import load_dotenv
@@ -107,7 +107,7 @@ class KISClient:
         )
         return token
 
-    def _headers(self, tr_id: str, *, tr_cont: str | None = None) -> dict[str, str]:
+    def _headers(self, tr_id: str, *, tr_cont: Optional[str] = None) -> dict[str, str]:
         h: dict[str, str] = {
             "content-type": "application/json; charset=utf-8",
             "authorization": f"Bearer {self.access_token}",
@@ -121,7 +121,7 @@ class KISClient:
         return h
 
     @staticmethod
-    def _kis_json_body(response: requests.Response) -> dict[str, Any] | None:
+    def _kis_json_body(response: requests.Response) -> Optional[dict[str, Any]]:
         """응답이 JSON 객체이면 dict로 파싱 (실패 시 None)."""
         try:
             if not (response.text or "").strip():
@@ -288,7 +288,7 @@ class KISClient:
         retries = max(0, min(int((os.getenv("KIS_BALANCE_HTTP_RETRIES") or "2").strip() or "2"), 5))
         delay = max(0.2, float((os.getenv("KIS_BALANCE_HTTP_RETRY_SEC") or "1.2").strip() or "1.2"))
 
-        last_response: requests.Response | None = None
+        last_response: Optional[requests.Response] = None
         for attempt in range(retries + 1):
             def do_req() -> requests.Response:
                 return requests.get(url, headers=self._headers(tr_id), params=params, timeout=self._timeout)
@@ -334,7 +334,7 @@ class KISClient:
         tr_id = "TTTC8001R" if self.kis_env == "prod" else "VTTC8001R"
         all_rows: list[dict[str, Any]] = []
         ctx_fk, ctx_nk = "", ""
-        tr_cont_send: str | None = None
+        tr_cont_send: Optional[str] = None
 
         while True:
             headers = self._headers(tr_id, tr_cont=tr_cont_send)
@@ -470,7 +470,7 @@ class KISClient:
         qty: int,
         *,
         price: int = 0,
-        order_dvsn: str | None = None,
+        order_dvsn: Optional[str] = None,
     ) -> dict[str, Any]:
         """
         국내주식 현금 매수.
@@ -488,7 +488,7 @@ class KISClient:
         qty: int,
         *,
         price: int = 0,
-        order_dvsn: str | None = None,
+        order_dvsn: Optional[str] = None,
     ) -> dict[str, Any]:
         """국내주식 현금 매도."""
         if order_dvsn is None:
