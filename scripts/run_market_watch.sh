@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # EC2: Python 3.10+ 로 market_watch 실행 (3.9 의 str|None 오류 방지)
 set -euo pipefail
+export PYTHONUNBUFFERED=1
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 PY="${PYTHON_BIN:-python3.11}"

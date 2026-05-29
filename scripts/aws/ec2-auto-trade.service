@@ -1,0 +1,27 @@
+# systemd: EC2 부팅 시 market_watch 자동 실행 (1회 설치)
+#
+#   sudo cp scripts/aws/ec2-auto-trade.service /etc/systemd/system/
+#   sudo sed -i 's|/home/ec2-user/자동매매|실제경로|g' /etc/systemd/system/ec2-auto-trade.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable ec2-auto-trade.service
+#   sudo systemctl start ec2-auto-trade.service
+#
+# 로그: journalctl -u ec2-auto-trade -f
+
+[Unit]
+Description=KIS auto-trade market_watch (KST session)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/자동매매
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/home/ec2-user/.local/bin:/usr/local/bin:/usr/bin
+ExecStart=/usr/bin/python3.11 /home/ec2-user/자동매매/src/market_watch.py
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target

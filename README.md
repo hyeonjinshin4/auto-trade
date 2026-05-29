@@ -95,6 +95,8 @@ python3 src/market_watch.py
 
 ## AWS에서 돌릴 때 (대시보드·Mac 동기화)
 
+**장중만 EC2 자동 Start/Stop (비용 절감):** [scripts/aws/README.md](scripts/aws/README.md) — 평일 08:55 KST Start, 15:40 KST Stop + 부팅 시 `market_watch` systemd.
+
 1. EC2 `.env`에 `EOD_AUTO_BUILD=true` (기본값) 확인 후 `market_watch` 재시작.
 2. 장 마감 후 로그에 `EOD artifacts OK: .../reports/dashboard_eod.html` 가 보이면 성공.
 3. Mac에서 최신 파일 받기:
