@@ -19,11 +19,20 @@ def _cfg() -> WatchlistConfig:
     )
 
 
-def test_single_condition_scores_independently() -> None:
-    """RSI 하나만 맞아도 14점 (2개 아니어도 0 아님)."""
+def test_single_condition_blocked_for_entry() -> None:
+    """주요 시그널 1개만이면 가점 합산은 0 (min_signals=2)."""
     hits = (SignalHit("rsi_oversold", "RSI"),)
     d = score_ta_buy(hits, _cfg(), trend_ok=True)
     assert d.raw_points == 14
+    assert d.score == 0.0
+    assert d.blocked_reason is not None
+    assert "매수시그널<2" in d.blocked_reason
+
+
+def test_entry_min_signals_env_override(monkeypatch) -> None:
+    monkeypatch.setenv("TRADING_TA_ENTRY_MIN_SIGNALS", "1")
+    hits = (SignalHit("rsi_oversold", "RSI"),)
+    d = score_ta_buy(hits, _cfg(), trend_ok=True)
     assert d.score == 14.0
     assert d.blocked_reason is None
 

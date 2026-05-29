@@ -78,8 +78,11 @@ class SellRuleParams:
     atr_trailing_multiplier: float = 2.3
 
     # Time Stop
-    time_stop_days: int = 10
-    time_stop_min_pnl: float = 0.02
+    time_stop_days: int = 15
+    time_stop_min_pnl: float = 0.01
+    time_stop_early_days: int = 5
+    time_stop_early_loss_pct: float = 0.05
+    time_stop_hash_spread: int = 4
 
     # TA 연계
     ta_sell_min_signals: int = 2

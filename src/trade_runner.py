@@ -73,6 +73,7 @@ from trade_ops import (
     save_buy_attempt_state,
     save_position_state,
     apply_sell_decision_to_position,
+    entry_risk_off_cap_flag,
     evaluate_holding_sell,
     sell_qty_for_ratio,
     sell_reasons,
@@ -771,7 +772,7 @@ def run_trading_cycle(*, dry_run: bool) -> int:
             _log.warning("Balance refresh after sells: %s", exc)
 
     regime_enum, regime_reasons = classify_regime(snap, rulebook.regime, vix_level=vix_f)
-    risk_off = regime_enum == MarketRegime.RISK_OFF
+    regime_risk_off = regime_enum == MarketRegime.RISK_OFF
     breadth_risk_off = False
     if to_bool(os.getenv("USE_KR_BREADTH_FILTER", "true")):
         try:
@@ -788,8 +789,16 @@ def run_trading_cycle(*, dry_run: bool) -> int:
                 note(msg_br)
         except Exception as exc:
             _log.warning("breadth filter skipped: %s", exc)
-    if breadth_risk_off:
-        risk_off = True
+    risk_off_cap = entry_risk_off_cap_flag(
+        regime_risk_off=regime_risk_off,
+        breadth_risk_off=breadth_risk_off,
+    )
+    if breadth_risk_off and not risk_off_cap:
+        _log.info(
+            "BREADTH 약세 — 엔진 risk_off 상한 미적용 (regime=%s). "
+            "구동작 상한은 TRADING_BREADTH_APPLY_RISK_OFF_CAP=true",
+            regime_enum.value,
+        )
     vix_spike = bool(snap.vix_spike)
 
     max_open = _max_open_positions()
@@ -809,7 +818,7 @@ def run_trading_cycle(*, dry_run: bool) -> int:
             ec=ec,
             snap=snap,
             vix_f=vix_f,
-            risk_off=risk_off,
+            risk_off=risk_off_cap,
             vix_spike=vix_spike,
             adaptive_out=adaptive_out,
             use_pipeline=use_pipeline,
@@ -834,7 +843,7 @@ def run_trading_cycle(*, dry_run: bool) -> int:
                 held_rows,
                 snap=snap,
                 vix_f=vix_f,
-                risk_off=risk_off,
+                risk_off=risk_off_cap,
                 vix_spike=vix_spike,
                 adaptive_out=adaptive_out,
                 use_pipeline=use_pipeline,
@@ -869,7 +878,7 @@ def run_trading_cycle(*, dry_run: bool) -> int:
                 ec=ec,
                 snap=snap,
                 vix_f=vix_f,
-                risk_off=risk_off,
+                risk_off=risk_off_cap,
                 vix_spike=vix_spike,
                 adaptive_out=adaptive_out,
                 use_pipeline=use_pipeline,

@@ -1,7 +1,9 @@
 """
 TA 시그널 — 조건별 독립 가점 (합산, 스케일 없음).
 
-충족한 조건마다 표에 적힌 점수가 그대로 더해짐 (RSI만 맞아도 +14).
+매수: 주요 시그널 TRADING_TA_ENTRY_MIN_SIGNALS개(기본 watchlist min_signals) 이상 + 추세필터.
+매도 청산: 주요 시그널 min_signals + 종가≤20일선 (score_ta_sell_exit).
+
 volume_up/down 은 주요 시그널 1개 이상일 때만 가점.
 """
 from __future__ import annotations
@@ -44,6 +46,20 @@ def ta_point_multiplier() -> float:
         return max(0.0, float(raw))
     except ValueError:
         return 1.0
+
+
+def ta_entry_min_primary_signals(cfg: WatchlistConfig) -> int:
+    """
+    매수에 필요한 주요 TA 시그널 개수(volume_up 제외).
+    TRADING_TA_ENTRY_MIN_SIGNALS 미설정 시 watchlist min_signals(기본 2).
+    """
+    raw = (os.getenv("TRADING_TA_ENTRY_MIN_SIGNALS") or "").strip()
+    if raw:
+        try:
+            return max(1, int(float(raw)))
+        except ValueError:
+            pass
+    return max(1, int(cfg.min_signals))
 
 
 @dataclass(frozen=True)
@@ -100,6 +116,19 @@ def score_ta_buy(
 
     if raw <= 0:
         return TaScoreDetail(0.0, 0, 0, trend_ok, br, lbl, "TA 조건 없음")
+
+    need = ta_entry_min_primary_signals(cfg)
+    if n_hit < need:
+        return TaScoreDetail(
+            0.0,
+            raw,
+            n_hit,
+            trend_ok,
+            br,
+            lbl,
+            f"매수시그널<{need}개(현재 주요{n_hit}개)",
+        )
+
     if not trend_ok:
         return TaScoreDetail(0.0, raw, n_hit, False, br, lbl, "추세필터(종가<20일선)")
 

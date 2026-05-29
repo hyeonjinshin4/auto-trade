@@ -33,12 +33,13 @@ def test_evaluate_ta_buy_ok(monkeypatch) -> None:
     assert r.detail is not None and r.detail.raw_points == 28
 
 
-def test_single_ta_signal_ok(monkeypatch) -> None:
+def test_single_ta_signal_blocked(monkeypatch) -> None:
     hits = [SignalHit("rsi_oversold", "RSI")]
     today = {"close": 100.0, "ma_slow": 90.0}
     with patch("signal_scanner.trading.evaluate_symbol_signals", return_value=(hits, [], today)):
         with patch("signal_scanner.trading.in_cooldown", return_value=False):
             r = evaluate_ta_buy("005930")
-    assert r.ok is True
-    assert r.score == 14.0
+    assert r.ok is False
+    assert r.score == 0.0
+    assert "매수시그널<2" in r.reason
     assert isinstance(r, TaBuyResult)

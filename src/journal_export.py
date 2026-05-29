@@ -40,7 +40,7 @@ def _infer_action(reason: str) -> str:
     if re.search(r"기준가=\d+", r) and re.search(r"tier=|엔진|TOPUP|PICK", r):
         return "buy"
     if re.search(
-        r"\[매도\]|take_profit|hard_stop|soft_stop|trail_stop|time_stop|ta_sell",
+        r"\[매도\]|take_profit|hard_stop|soft_stop|early_time_stop|trail_stop|time_stop|ta_sell",
         r,
         re.I,
     ):

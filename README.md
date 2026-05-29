@@ -4,8 +4,11 @@
 
 ## 1) 설치
 
+**Python 3.10 이상** 권장 (Amazon Linux 기본 `python3` 가 3.9이면 `python3.11` 사용).
+
 ```bash
 python3 -m pip install -r requirements.txt
+# EC2 (AL2023) 예: sudo dnf install -y python3.11 && python3.11 -m pip install -r requirements.txt
 ```
 
 ## 2) 환경변수 작성

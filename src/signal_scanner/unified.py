@@ -4,6 +4,7 @@
   combined = clamp(0..100, 엔진 + TA매수×MULT − TA매도×MULT)
   tier: TRADING_SCORE_FULL / HALF
 
+매수 TA: 주요 시그널 ≥ TRADING_TA_ENTRY_MIN_SIGNALS(기본 watchlist min_signals) + 추세필터.
 보유 청산: 주요 매도 시그널 ≥2 + 종가≤20일선 (watchlist min_signals, confirm_trend)
 """
 from __future__ import annotations

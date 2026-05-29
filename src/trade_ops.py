@@ -741,6 +741,7 @@ def evaluate_holding_sell(
         tp1_done=bool(pos.get("tp1_done", False)),
         tp2_done=bool(pos.get("tp2_done", False)),
         sell=rulebook.sell,
+        symbol=sym or None,
     )
 
 
@@ -876,6 +877,19 @@ def holding_entry_scan_enabled() -> bool:
 
 def _env_to_bool(v: str) -> bool:
     return str(v).strip().lower() in {"1", "true", "yes", "y"}
+
+
+def entry_risk_off_cap_flag(*, regime_risk_off: bool, breadth_risk_off: bool) -> bool:
+    """
+    엔진 점수 상한(risk_off_cap) 적용 여부.
+    - regime RISK_OFF: 항상 상한 (decide_entry 내부에서도 regime_enum으로 재확인)
+    - breadth만 약세: 기본 상한 없음 (TRADING_BREADTH_APPLY_RISK_OFF_CAP=true 시 구동작)
+    """
+    if regime_risk_off:
+        return True
+    if breadth_risk_off:
+        return _env_to_bool(os.getenv("TRADING_BREADTH_APPLY_RISK_OFF_CAP", "false"))
+    return False
 
 
 def evaluate_entry_score(
